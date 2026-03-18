@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jendrik Jungheim | Portfolio</title>
+    <meta name="description" content="Portfolio von Jendrik Jungheim – Schüler, Developer und Drohnenpilot. Entdecke Projekte, Skills und Kontaktmöglichkeiten." />
+    <link rel="icon" href="logo.svg" type="image/svg+xml">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script>
@@ -12,7 +14,17 @@
         if (typeof window !== 'undefined') {
             document.documentElement.classList.add('dark');
         }
-        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); }
+
+        function updateDarkModeLabel() {
+            const label = document.getElementById('darkModeLabel');
+            if (!label) return;
+            label.textContent = document.documentElement.classList.contains('dark') ? 'White Mode' : 'Dark Mode';
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            updateDarkModeLabel();
+        }
     </script>
     <style>
         html { scroll-behavior: smooth; }
@@ -154,9 +166,24 @@
                 transform: translateY(0);
             }
         }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
         
         .mobile-menu-enter {
-            animation: slideDown 0.3s ease-out;
+            animation: slideDown 0.3s ease-out forwards;
+        }
+
+        .mobile-menu-leave {
+            animation: slideUp 0.25s ease-in forwards;
         }
     </style>
 </head>
@@ -195,7 +222,7 @@
                 <div class="border-t border-gray-200 dark:border-white/10 my-4"></div>
                 <button onclick="toggleDarkMode()" class="flex items-center space-x-2 text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition py-3 px-4 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 w-full text-left">
                     <span>🌓</span>
-                    <span>Dark Mode</span>
+                    <span id="darkModeLabel">Dark Mode</span>
                 </button>
             </div>
         </div>
@@ -347,9 +374,6 @@
                 
                 <p class="text-lg font-semibold mb-6 text-black dark:text-white">🔗 Soziale Netzwerke</p>
                 <div class="flex justify-center space-x-6 flex-wrap gap-4">
-                    <a href="https://de.linkedin.com/in/jendrik-jungheim" target="_blank" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-600 dark:text-blue-400 px-6 py-3 rounded-full font-semibold apple-hover transition border border-blue-600/30 dark:border-blue-600/50">
-                        🔗 LinkedIn
-                    </a>
                     <a href="https://instagram.com/jendrik.jungheim" target="_blank" class="bg-pink-600/20 hover:bg-pink-600/40 text-pink-600 dark:text-pink-400 px-6 py-3 rounded-full font-semibold apple-hover transition border border-pink-600/30 dark:border-pink-600/50">
                         📷 Instagram
                     </a>
@@ -382,7 +406,6 @@
                     <div class="space-y-2 text-sm">
                         <a href="https://github.com/Zoggo1" class="text-gray-400 hover:text-blue-600 transition block">GitHub</a>
                         <a href="https://instagram.com/jendrik.jungheim" class="text-gray-400 hover:text-pink-600 transition block">Instagram</a>
-                        <a href="https://de.linkedin.com/in/jendrik-jungheim" class="text-gray-400 hover:text-blue-600 transition block">LinkedIn</a>
                     </div>
                 </div>
             </div>
@@ -415,29 +438,64 @@
         // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
+        let mobileMenuAnimating = false;
 
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        function showMobileMenu() {
+            if (mobileMenuAnimating || !mobileMenu.classList.contains('hidden')) return;
+            mobileMenu.classList.remove('hidden');
+            mobileMenu.classList.remove('mobile-menu-leave');
+            mobileMenu.classList.add('mobile-menu-enter');
+            mobileMenuAnimating = true;
+
+            mobileMenu.addEventListener('animationend', () => {
+                mobileMenu.classList.remove('mobile-menu-enter');
+                mobileMenuAnimating = false;
+            }, { once: true });
+        }
+
+        function hideMobileMenu() {
+            if (mobileMenuAnimating || mobileMenu.classList.contains('hidden')) return;
+            mobileMenu.classList.remove('mobile-menu-enter');
+            mobileMenu.classList.add('mobile-menu-leave');
+            mobileMenuAnimating = true;
+
+            mobileMenu.addEventListener('animationend', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('mobile-menu-leave');
+                mobileMenuAnimating = false;
+            }, { once: true });
+        }
+
+        mobileMenuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (mobileMenu.classList.contains('hidden')) {
+                showMobileMenu();
+            } else {
+                hideMobileMenu();
+            }
         });
 
         // Close mobile menu when clicking on a link
         document.querySelectorAll('#mobile-menu a').forEach(link => {
             link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
+                hideMobileMenu();
             });
         });
 
         // Close mobile menu when clicking the dark mode button
         document.querySelector('#mobile-menu button').addEventListener('click', () => {
-            mobileMenu.classList.add('hidden');
+            hideMobileMenu();
         });
 
         // Close mobile menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
-                mobileMenu.classList.add('hidden');
+                hideMobileMenu();
             }
         });
+
+        // Initialize the label state based on current mode
+        updateDarkModeLabel();
     </script>
 
 </body>
