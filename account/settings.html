@@ -136,8 +136,8 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://hlcapqbkwfxlvrdedhsn.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_hhaNeuG7r1pV7U-A4djxuQ_p55N_-hJ';
+        const SUPABASE_URL = 'https://pcxhlgnlrlsnlpmgcbai.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_eKRCiIBSRE_6al_hc0rOHA_P5wL6KeQ';
         const THEME_KEY = 'themePreference';
         let client = null;
 
@@ -169,7 +169,7 @@
             const user = data.user;
             document.getElementById('userEmail').textContent = user.email || 'Unbekannt';
             document.getElementById('userId').textContent = user.id;
-            document.getElementById('fullName').value = user.user_metadata?.full_name || user.user_metadata?.username || '';
+            document.getElementById('fullName').value = user.user_metadata?.full_name || '';
         }
 
         async function updateProfile(event) {
@@ -177,11 +177,7 @@
             const fullName = document.getElementById('fullName').value.trim();
             const newEmail = document.getElementById('newEmail').value.trim();
 
-            const updateData = { data: {} };
-            if (fullName) {
-                updateData.data.full_name = fullName;
-                updateData.data.username = fullName;
-            }
+            const updateData = { data: { full_name: fullName } };
             if (newEmail) {
                 updateData.email = newEmail;
             }
@@ -190,17 +186,6 @@
             if (error) {
                 showMessage('Fehler: ' + error.message, 'error');
                 return;
-            }
-
-            if (fullName) {
-                const profileUpdate = await client.from('profiles').upsert({
-                    id: data.user.id,
-                    username: fullName,
-                    full_name: fullName,
-                });
-                if (profileUpdate.error) {
-                    console.error('Profile update error:', profileUpdate.error);
-                }
             }
 
             showMessage('Profil aktualisiert!', 'success');
