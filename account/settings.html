@@ -16,8 +16,9 @@
         .topbar { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.5rem; padding:1rem 1.5rem; border-radius:28px; background: rgba(255,255,255,0.80); border:1px solid rgba(148,163,184,0.24); box-shadow:0 16px 40px rgba(15,23,42,0.10); backdrop-filter: blur(20px); }
         body.dark .topbar { background: rgba(15,23,42,0.78); }
         .topbar-left .brand-strip { text-transform:uppercase; letter-spacing:0.22em; font-size:0.95rem; font-weight:700; color:#2563eb; }
-        .panel { background: rgba(255,255,255,0.9); border:1px solid rgba(148,163,184,0.12); border-radius:16px; padding:2rem; max-width:880px; margin:0 auto; box-shadow:0 10px 30px rgba(2,6,23,0.06); }
+        .panel { background: rgba(255,255,255,0.9); border:1px solid rgba(148,163,184,0.12); border-radius:16px; padding:2rem; max-width:880px; margin:0 auto; box-shadow:0 10px 30px rgba(2,6,23,0.06); color: #111827; }
         body.dark .panel { background: rgba(6,10,20,0.6); }
+        body.dark .panel, body.dark .panel h2, body.dark .panel p, body.dark .meta { color: #e2e8f0; }
         h2 { margin-top:0; margin-bottom:0.5rem; font-weight:700; }
         .meta { color:#475569; margin-bottom:0.75rem; }
         label { display:block; margin-bottom:0.5rem; color:#475569; font-weight:600; }
@@ -38,6 +39,7 @@
                 <div class="meta">Account-Einstellungen</div>
             </div>
             <div class="topbar-right">
+                <button id="themeToggle" type="button" class="theme-toggle" style="margin-right:0.5rem;">Dark Mode</button>
                 <a href="forum.html" class="button-link">Zum Forum</a>
             </div>
         </div>
