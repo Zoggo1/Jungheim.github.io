@@ -7,79 +7,80 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* Forum-like base styles */
-        :root { color-scheme: light; font-family: 'Inter', system-ui, sans-serif; }
+        :root { color-scheme: dark; font-family: 'Inter', system-ui, sans-serif; }
         * { box-sizing: border-box; }
-        body { margin:0; min-height:100vh; display:flex; justify-content:center; padding:2rem; color:#111827; position:relative; background:#f8fafc; }
-        .background-panel { position: fixed; inset: 0; z-index:-1; background-color: #f8fafc; background-image: linear-gradient(180deg, rgba(248,250,252,1) 0%, rgba(248,250,252,0) 100%), url('riesenrad.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; }
-        body.dark .background-panel { background-color:#050912; background-image: linear-gradient(180deg, rgba(5,9,23,1) 0%, rgba(5,9,23,0) 100%), url('riesenrad.jpg'); }
-        .layout { width: min(1100px, 100%); }
-        .topbar { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.5rem; padding:1rem 1.5rem; border-radius:28px; background: rgba(255,255,255,0.80); border:1px solid rgba(148,163,184,0.24); box-shadow:0 16px 40px rgba(15,23,42,0.10); backdrop-filter: blur(20px); }
-        body.dark .topbar { background: rgba(15,23,42,0.78); }
-        .topbar-left .brand-strip { text-transform:uppercase; letter-spacing:0.22em; font-size:0.95rem; font-weight:700; color:#2563eb; }
-        .panel { background: rgba(255,255,255,0.9); border:1px solid rgba(148,163,184,0.12); border-radius:16px; padding:2rem; max-width:880px; margin:0 auto; box-shadow:0 10px 30px rgba(2,6,23,0.06); color: #111827; }
-        body.dark .panel { background: rgba(6,10,20,0.6); }
-        body.dark .panel, body.dark .panel h2, body.dark .panel p, body.dark .panel .meta, body.dark .panel label { color: #e2e8f0; }
-        h2 { margin-top:0; margin-bottom:0.5rem; font-weight:700; }
-        .meta { color:#475569; margin-bottom:0.75rem; }
-        .settings-menu { display:flex; gap:0.75rem; margin-bottom:1.5rem; }
-        .settings-menu button { flex:1; border:1px solid rgba(56,189,248,0.35); background: rgba(56,189,248,0.08); color:#0c4a6e; padding:12px 14px; border-radius:999px; font-weight:700; cursor:pointer; }
-        .settings-menu button.active { background:#38bdf8; color:#fff; border-color:#38bdf8; }
-        .settings-menu button:hover { background: rgba(56,189,248,0.12); }
-        label { display:block; margin-bottom:0.5rem; color:#475569; font-weight:600; }
-        input { width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(148,163,184,0.18); }
-        button { background:#38bdf8; color:#fff; border:none; padding:12px 14px; border-radius:10px; font-weight:700; cursor:pointer; }
-        button.secondary { background:#2d3748; }
-        .button-link { display:inline-flex; align-items:center; justify-content:center; padding:12px 16px; border-radius:999px; background: rgba(56,189,248,0.15); color: #0369a1; text-decoration:none; font-weight:700; border:1px solid rgba(56,189,248,0.3); }
-        .button-link:hover { background: rgba(56,189,248,0.2); }
-        .message { margin-top:1rem; display:none; padding:10px; border-radius:8px; }
-        .success { background:#ecfdf5; color:#166534; border:1px solid #a7f3d0; display:block; }
-        .error { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; display:block; }
+        body { margin:0; min-height:100vh; display:flex; justify-content:center; padding:2rem; color:#e2e8f0; position:relative; background:#020617; }
+        .background-panel { position: fixed; inset: 0; z-index:-1; background-color: #020617; background-image: linear-gradient(180deg, rgba(2,6,23,0.95) 0%, rgba(2,6,23,0.65) 70%), url('riesenrad.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; }
+        .layout { width: min(1100px, 100%); display:grid; grid-template-columns: 240px 1fr; gap:1.5rem; align-items:start; }
+        .topbar { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1rem 1.5rem; border-radius:28px; background: rgba(15,23,42,0.85); border:1px solid rgba(148,163,184,0.18); box-shadow:0 16px 40px rgba(0,0,0,0.35); }
+        .topbar-left .brand-strip { text-transform:uppercase; letter-spacing:0.22em; font-size:0.95rem; font-weight:700; color:#38bdf8; }
+        .panel { background: rgba(15,23,42,0.92); border:1px solid rgba(71,85,105,0.24); border-radius:16px; padding:2rem; max-width:100%; box-shadow:0 10px 30px rgba(0,0,0,0.35); color: #e2e8f0; }
+        h2 { margin-top:0; margin-bottom:0.5rem; font-weight:700; color:#f8fafc; }
+        .meta { color:#94a3b8; margin-bottom:0.75rem; }
+        .sidebar { position:sticky; top:2rem; align-self:start; background: rgba(15,23,42,0.90); border:1px solid rgba(71,85,105,0.18); border-radius:22px; padding:1.5rem 1.25rem; box-shadow:0 20px 40px rgba(0,0,0,0.3); }
+        .sidebar h3 { margin:0 0 1rem 0; font-size:1rem; letter-spacing:0.08em; text-transform:uppercase; color:#60a5fa; }
+        .sidebar button, .sidebar a.button-link { width:100%; text-align:left; display:inline-flex; align-items:center; gap:0.75rem; border:none; padding:12px 14px; border-radius:14px; background: rgba(71,85,105,0.12); color:#e2e8f0; font-weight:600; cursor:pointer; transition:background 0.2s ease; }
+        .sidebar button.active, .sidebar button:hover, .sidebar a.button-link:hover { background: rgba(56,189,248,0.18); }
+        .sidebar button.active { color:#fff; }
+        .sidebar a.button-link { justify-content:center; margin-top:1rem; border:1px solid rgba(56,189,248,0.3); text-decoration:none; }
+        .form-row { margin-bottom:1.25rem; }
+        label { display:block; margin-bottom:0.5rem; color:#94a3b8; font-weight:600; }
+        input { width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(71,85,105,0.5); background:#0f172a; color:#e2e8f0; }
+        input::placeholder { color:#64748b; }
+        button { background:#38bdf8; color:#0f172a; border:none; padding:12px 14px; border-radius:12px; font-weight:700; cursor:pointer; }
+        .button-secondary { background:#334155; color:#e2e8f0; }
+        .message { margin-top:1rem; display:none; padding:12px 14px; border-radius:12px; }
+        .success { background:#153f28; color:#bbf7d0; border:1px solid #22c55e; }
+        .error { background:#521010; color:#fecaca; border:1px solid #fca5a5; }
     </style>
 </head>
 <body>
     <div class="background-panel"></div>
     <div class="layout">
-        <div class="topbar">
-            <div class="topbar-left">
-                <div class="brand-strip">Heimatfest</div>
-                <div class="meta">Account-Einstellungen</div>
-            </div>
-            <div class="topbar-right">
-                <a href="forum.html" class="button-link">Zum Forum</a>
-            </div>
-        </div>
+        <aside class="sidebar" role="navigation" aria-label="Einstellungen">
+            <h3>Heimatfest Menü</h3>
+            <button type="button" class="active" data-target="section-fullName">Name ändern</button>
+            <button type="button" data-target="section-newEmail">E-Mail ändern</button>
+            <button type="button" data-target="section-newPassword">Passwort zurücksetzen</button>
+            <a href="forum.html" class="button-link">Zurück zum Forum</a>
+        </aside>
 
         <main class="panel" role="main">
             <h2>Account-Einstellungen</h2>
             <p>Nur angemeldete Benutzer kommen hierher. Du kannst dein Profil ansehen, aktualisieren oder dich abmelden.</p>
-
-            <div class="settings-menu" role="tablist">
-                <button type="button" class="active" data-target="newEmail">E-Mail</button>
-                <button type="button" data-target="fullName">Name</button>
-                <button type="button" data-target="newPassword">Passwort</button>
-            </div>
-
             <div class="meta">Eingeloggt als: <strong id="userEmail">Lade...</strong></div>
             <div class="meta">Benutzer-ID: <strong id="userId">Lade...</strong></div>
 
             <form id="profileForm">
-                <div class="form-row">
-                    <label for="fullName">Name / Anzeige</label>
-                    <input type="text" id="fullName" placeholder="Dein Name" autocomplete="name">
-                </div>
-                <div class="form-row">
-                    <label for="newEmail">Neue E-Mail (optional)</label>
-                    <input type="email" id="newEmail" placeholder="neue@mail.de" autocomplete="email">
-                </div>
-                <div class="form-row">
-                    <label for="newPassword">Neues Passwort</label>
-                    <input type="password" id="newPassword" placeholder="Neue Passwort" autocomplete="new-password">
-                </div>
+                <section id="section-fullName" class="form-section">
+                    <h3>Name ändern</h3>
+                    <div class="form-row">
+                        <label for="fullName">Name / Anzeige</label>
+                        <input type="text" id="fullName" placeholder="Dein Name" autocomplete="name">
+                    </div>
+                </section>
+
+                <section id="section-newEmail" class="form-section">
+                    <h3>E-Mail ändern</h3>
+                    <div class="form-row">
+                        <label for="newEmail">Neue E-Mail (optional)</label>
+                        <input type="email" id="newEmail" placeholder="neue@mail.de" autocomplete="email">
+                    </div>
+                </section>
+
+                <section id="section-newPassword" class="form-section">
+                    <h3>Passwort zurücksetzen</h3>
+                    <div class="form-row">
+                        <label for="newPassword">Neues Passwort</label>
+                        <input type="password" id="newPassword" placeholder="Neue Passwort" autocomplete="new-password">
+                    </div>
+                </section>
+
                 <button type="submit">Profil aktualisieren</button>
             </form>
 
             <div style="margin-top:1rem; display:flex; gap:0.75rem;">
-                <button id="logoutButton" type="button" style="padding:10px 14px;border-radius:8px;">Abmelden</button>
+                <button id="logoutButton" type="button" class="button-secondary">Abmelden</button>
             </div>
 
             <div id="message" class="message"></div>
@@ -157,15 +158,15 @@
             document.getElementById('profileForm').addEventListener('submit', updateProfile);
             document.getElementById('logoutButton').addEventListener('click', logout);
 
-            document.querySelectorAll('.settings-menu button').forEach((button) => {
+            document.querySelectorAll('.sidebar button').forEach((button) => {
                 button.addEventListener('click', () => {
-                    document.querySelectorAll('.settings-menu button').forEach((btn) => btn.classList.remove('active'));
+                    document.querySelectorAll('.sidebar button').forEach((btn) => btn.classList.remove('active'));
                     button.classList.add('active');
                     const targetId = button.dataset.target;
                     const target = document.getElementById(targetId);
                     if (target) {
-                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        target.focus();
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        target.querySelector('input')?.focus();
                     }
                 });
             });
