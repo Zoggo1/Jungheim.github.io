@@ -193,10 +193,10 @@
             <h2>Anmelden</h2>
             
             <div class="input-group">
-                <label>Benutzername oder E-Mail</label>
+                <label>E-Mail oder Benutzername</label>
                 <div style="position: relative;">
                     <i class="fas fa-user" style="position: absolute; left: 0; top: 12px; color: rgba(0, 0, 0, 0.3); font-size: 16px;"></i>
-                    <input type="text" id="identifier" placeholder="username oder email@beispiel.de" required style="padding-left: 30px;">
+                    <input type="text" id="identifier" placeholder="email@beispiel.de oder benutzername" required style="padding-left: 30px;">
                 </div>
             </div>
 
@@ -222,8 +222,8 @@
     </div>
     
     <script>
-        const SUPABASE_URL = 'https://hlcapqbkwfxlvrdedhsn.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_hhaNeuG7r1pV7U-A4djxuQ_p55N_-hJ';
+        const SUPABASE_URL = 'https://pcxhlgnlrlsnlpmgcbai.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_eKRCiIBSRE_6al_hc0rOHA_P5wL6KeQ';
         let client = null;
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -293,7 +293,7 @@
             msgDiv.innerText = 'Prüfe Zugangsdaten...';
 
             if (!identifier || !password) {
-                msgDiv.innerText = 'Bitte gib Benutzername/E-Mail und Passwort ein.';
+                msgDiv.innerText = 'Bitte gib E-Mail/Benutzername und Passwort ein.';
                 msgDiv.className = 'error';
                 return;
             }
@@ -306,7 +306,7 @@
 
             let email = identifier;
             if (!identifier.includes('@')) {
-                msgDiv.innerText = 'Suche Benutzername...';
+                msgDiv.innerText = 'Prüfe Benutzernamen...';
                 const resolvedEmail = await resolveEmail(identifier);
                 if (!resolvedEmail) {
                     msgDiv.innerText = 'Benutzername nicht gefunden. Bitte nutze E-Mail oder registriere dich zuerst.';
@@ -318,7 +318,7 @@
 
             try {
                 const { data, error } = await client.auth.signInWithPassword({
-                    email: email,
+                    email,
                     password,
                 });
 
