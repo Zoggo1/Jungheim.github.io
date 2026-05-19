@@ -1,41 +1,36 @@
-const SUPABASE_URL = 'https://hlcapqbkwfxlvrdedhsn.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_hhaNeuG7r1pV7U-A4djxuQ_p55N_-hJ';
+const SUPABASE_URL = 'https://pcxhlgnlrlsnlpmgcbai.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_eKRCiIBSRE_6al_hc0rOHA_P5wL6KeQ';
 let client = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+    console.log('DOMContentLoaded - Supabase:', typeof supabase !== 'undefined' ? 'geladen' : 'NICHT geladen');
+    
     if (typeof supabase !== 'undefined') {
-        client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        try {
+            client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log('Supabase Client initialisiert');
+        } catch (err) {
+            console.error('Fehler beim Initialisieren von Supabase:', err);
+        }
+    } else {
+        console.error('Supabase ist nicht geladen!');
     }
 
     const loginForm = document.getElementById("login-form");
+    
+    if (!loginForm) {
+        console.error('Login-Formular nicht gefunden!');
+        return;
+    }
 
     loginForm.addEventListener("submit", function(e) {
         e.preventDefault();
+        console.log('Login-Submit ausgelöst');
         handleLogin();
     });
+    
+    console.log('Event-Listener hinzugefügt');
 });
-
-async function resolveEmail(identifier) {
-    if (identifier.includes('@')) {
-        return identifier;
-    }
-
-    if (!client) {
-        return null;
-    }
-
-    const { data, error } = await client
-        .from('profiles')
-        .select('email')
-        .eq('username', identifier)
-        .maybeSingle();
-
-    if (error || !data?.email) {
-        return null;
-    }
-
-    return data.email;
-}
 
 async function handleLogin() {
     const msgDiv = document.getElementById('message');
@@ -47,7 +42,7 @@ async function handleLogin() {
     msgDiv.innerText = 'Prüfe Zugangsdaten...';
 
     if (!identifier || !password) {
-        msgDiv.innerText = 'Bitte gib Benutzername/E-Mail und Passwort ein.';
+        msgDiv.innerText = 'Bitte gib E-Mail und Passwort ein.';
         msgDiv.className = 'error';
         return;
     }
@@ -58,21 +53,9 @@ async function handleLogin() {
         return;
     }
 
-    let email = identifier;
-    if (!identifier.includes('@')) {
-        msgDiv.innerText = 'Suche Benutzername...';
-        const resolvedEmail = await resolveEmail(identifier);
-        if (!resolvedEmail) {
-            msgDiv.innerText = 'Benutzername nicht gefunden. Bitte nutze E-Mail oder registriere dich zuerst.';
-            msgDiv.className = 'error';
-            return;
-        }
-        email = resolvedEmail;
-    }
-
     try {
         const { data, error } = await client.auth.signInWithPassword({
-            email,
+            email: identifier,
             password,
         });
 
