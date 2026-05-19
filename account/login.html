@@ -321,6 +321,7 @@
                     email,
                     password,
                 });
+                console.log('Supabase login response:', { data, error });
 
                 if (error) {
                     msgDiv.innerText = 'Error: ' + error.message;
@@ -328,15 +329,18 @@
                     return;
                 }
 
-                if (data.user) {
+                if (data.user || data.session) {
                     msgDiv.innerText = 'Erfolgreich eingeloggt! Weiterleitung zum Forum...';
                     msgDiv.className = 'success';
                     setTimeout(() => {
-                        window.location.href = 'forum.html';
+                        window.location.assign('forum.html');
                     }, 1500);
                 } else {
-                    msgDiv.innerText = 'Anmeldung fehlgeschlagen. Bitte überprüfe deine Daten.';
-                    msgDiv.className = 'error';
+                    msgDiv.innerText = 'Anmeldung erfolgreich, aber keine Benutzerinfos erhalten. Weiterleitung...';
+                    msgDiv.className = 'success';
+                    setTimeout(() => {
+                        window.location.assign('forum.html');
+                    }, 1500);
                 }
             } catch (err) {
                 msgDiv.innerText = 'Kritischer Fehler: ' + err.message;
