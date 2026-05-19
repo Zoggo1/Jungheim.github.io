@@ -269,14 +269,31 @@
                 const { data, error } = await client
                     .from('profiles')
                     .select('email')
-                    .eq('username', identifier)
+                    .or(`username.eq.${identifier},full_name.eq.${identifier}`)
                     .maybeSingle();
 
-                if (error || !data?.email) {
+                if (error) {
+                    console.error('Fehler beim Auflösen des Benutzernamens:', error);
                     return null;
                 }
 
-                return data.email;
+                if (data?.email) {
+                    return data.email;
+                }
+
+                // Case-insensitive Fallback, falls Benutzername anders geschrieben wurde.
+                const { data: fallbackData, error: fallbackError } = await client
+                    .from('profiles')
+                    .select('email')
+                    .or(`username.ilike.${identifier},full_name.ilike.${identifier}`)
+                    .maybeSingle();
+
+                if (fallbackError) {
+                    console.error('Fehler beim Fallback für den Benutzernamen:', fallbackError);
+                    return null;
+                }
+
+                return fallbackData?.email || null;
             } catch (err) {
                 console.error('Fehler beim Auflösen des Benutzernamens:', err);
                 return null;
