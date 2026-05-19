@@ -6,135 +6,69 @@
     <title>Account-Einstellungen | Dein Projekt</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            color-scheme: light;
-            --body-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --card-bg: #ffffff;
-            --text-color: #111827;
-            --subtext-color: #475569;
-            --input-bg: #ffffff;
-            --input-border: #e2e8f0;
-            --button-bg: #667eea;
-            --button-hover: #5a67d8;
-            --button-text: #ffffff;
-            --shadow: 0 25px 50px rgba(0,0,0,0.08);
-            --link-color: #667eea;
-        }
-
-        body.dark {
-            color-scheme: dark;
-            --body-bg: radial-gradient(circle at top, #020617 0%, #0b1120 55%, #111827 100%);
-            --card-bg: #111827;
-            --text-color: #e2e8f0;
-            --subtext-color: #cbd5e1;
-            --input-bg: #1f2937;
-            --input-border: #334155;
-            --button-bg: #7c3aed;
-            --button-hover: #8b5cf6;
-            --button-text: #ffffff;
-            --shadow: 0 25px 50px rgba(0,0,0,0.22);
-            --link-color: #93c5fd;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--body-bg);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .card {
-            width: min(520px, 100%);
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(148,163,184,0.25);
-            position: relative;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: transparent;
-            border: 1px solid var(--input-border);
-            color: var(--text-color);
-            padding: 0.65rem 0.9rem;
-            border-radius: 999px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: background 0.2s, color 0.2s, transform 0.2s;
-        }
-        .theme-toggle:hover {
-            background: rgba(255,255,255,0.12);
-            transform: translateY(-1px);
-        }
-
-        h2 { color: var(--text-color); margin-bottom: 0.5rem; font-weight: 700; }
-        p { color: var(--subtext-color); margin-bottom: 1.5rem; }
-        .meta { margin-bottom: 0.75rem; color: var(--subtext-color); }
-        .meta strong { color: var(--text-color); }
-        .input-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--subtext-color); font-weight: 600; }
-        input { width: 100%; padding: 12px 16px; border: 1px solid var(--input-border); border-radius: 12px; font-size: 1rem; background: var(--input-bg); color: var(--text-color); }
-        input:focus { outline: none; box-shadow: 0 0 0 3px rgba(102,126,234,0.15); border-color: var(--button-bg); }
-        button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 1rem;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            color: var(--button-text);
-            background: var(--button-bg);
-            transition: background 0.24s ease;
-        }
-        button:hover { background: var(--button-hover); }
-        .secondary { background: #2d3748; }
-        .secondary:hover { background: #1f2937; }
-        .message { margin-top: 1.5rem; padding: 12px; border-radius: 12px; display: none; }
-        .success { background: #ecfdf5; color: #166534; border: 1px solid #a7f3d0; display: block; }
-        .error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; display: block; }
-        .actions { display: grid; gap: 0.75rem; margin-top: 1.5rem; }
-        .actions a { text-decoration: none; display: inline-block; }
+        /* Forum-like base styles */
+        :root { color-scheme: light; font-family: 'Inter', system-ui, sans-serif; }
+        * { box-sizing: border-box; }
+        body { margin:0; min-height:100vh; display:flex; justify-content:center; padding:2rem; color:#111827; position:relative; background:#f8fafc; }
+        .background-panel { position: fixed; inset: 0; z-index:-1; background-color: #f8fafc; background-image: linear-gradient(180deg, rgba(248,250,252,1) 0%, rgba(248,250,252,0) 100%), url('riesenrad.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; }
+        body.dark .background-panel { background-color:#050912; background-image: linear-gradient(180deg, rgba(5,9,23,1) 0%, rgba(5,9,23,0) 100%), url('riesenrad.jpg'); }
+        .layout { width: min(1100px, 100%); }
+        .topbar { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.5rem; padding:1rem 1.5rem; border-radius:28px; background: rgba(255,255,255,0.80); border:1px solid rgba(148,163,184,0.24); box-shadow:0 16px 40px rgba(15,23,42,0.10); backdrop-filter: blur(20px); }
+        body.dark .topbar { background: rgba(15,23,42,0.78); }
+        .topbar-left .brand-strip { text-transform:uppercase; letter-spacing:0.22em; font-size:0.95rem; font-weight:700; color:#2563eb; }
+        .panel { background: rgba(255,255,255,0.9); border:1px solid rgba(148,163,184,0.12); border-radius:16px; padding:2rem; max-width:880px; margin:0 auto; box-shadow:0 10px 30px rgba(2,6,23,0.06); }
+        body.dark .panel { background: rgba(6,10,20,0.6); }
+        h2 { margin-top:0; margin-bottom:0.5rem; font-weight:700; }
+        .meta { color:#475569; margin-bottom:0.75rem; }
+        label { display:block; margin-bottom:0.5rem; color:#475569; font-weight:600; }
+        input { width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(148,163,184,0.18); }
+        button { background:#38bdf8; color:#fff; border:none; padding:12px 14px; border-radius:10px; font-weight:700; cursor:pointer; }
+        button.secondary { background:#2d3748; }
+        .message { margin-top:1rem; display:none; padding:10px; border-radius:8px; }
+        .success { background:#ecfdf5; color:#166534; border:1px solid #a7f3d0; display:block; }
+        .error { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; display:block; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <button id="themeToggle" type="button" class="theme-toggle">Dark Mode</button>
-        <h2>Account-Einstellungen</h2>
-        <p>Nur angemeldete Benutzer kommen hierher. Du kannst dein Profil ansehen, aktualisieren oder dich abmelden.</p>
-
-        <div class="meta">Eingeloggt als: <strong id="userEmail">Lade...</strong></div>
-        <div class="meta">Benutzer-ID: <strong id="userId">Lade...</strong></div>
-
-        <form id="profileForm">
-            <div class="input-group">
-                <label for="fullName">Name / Anzeige</label>
-                <input type="text" id="fullName" placeholder="Dein Name" autocomplete="name">
+    <div class="background-panel"></div>
+    <div class="layout">
+        <div class="topbar">
+            <div class="topbar-left">
+                <div class="brand-strip">Heimatfest</div>
+                <div class="meta">Account-Einstellungen</div>
             </div>
-            <div class="input-group">
-                <label for="newEmail">Neue E-Mail (optional)</label>
-                <input type="email" id="newEmail" placeholder="neue@mail.de" autocomplete="email">
+            <div class="topbar-right">
+                <a href="forum.html" class="button-link">Zum Forum</a>
             </div>
-            <button type="submit">Profil aktualisieren</button>
-        </form>
-
-        <div class="actions">
-            <a href="forum.html" class="secondary">Zum Forum</a>
-            <button id="logoutButton" type="button">Abmelden</button>
         </div>
 
-        <div id="message" class="message"></div>
-    </div>
+        <main class="panel" role="main">
+            <h2>Account-Einstellungen</h2>
+            <p>Nur angemeldete Benutzer kommen hierher. Du kannst dein Profil ansehen, aktualisieren oder dich abmelden.</p>
 
+            <div class="meta">Eingeloggt als: <strong id="userEmail">Lade...</strong></div>
+            <div class="meta">Benutzer-ID: <strong id="userId">Lade...</strong></div>
+
+            <form id="profileForm">
+                <div class="form-row">
+                    <label for="fullName">Name / Anzeige</label>
+                    <input type="text" id="fullName" placeholder="Dein Name" autocomplete="name">
+                </div>
+                <div class="form-row">
+                    <label for="newEmail">Neue E-Mail (optional)</label>
+                    <input type="email" id="newEmail" placeholder="neue@mail.de" autocomplete="email">
+                </div>
+                <button type="submit">Profil aktualisieren</button>
+            </form>
+
+            <div style="margin-top:1rem; display:flex; gap:0.75rem;">
+                <a href="forum.html" class="secondary" style="display:inline-block;padding:10px 14px;border-radius:8px;background:#2d3748;color:#fff;text-decoration:none;">Zum Forum</a>
+                <button id="logoutButton" type="button" style="padding:10px 14px;border-radius:8px;">Abmelden</button>
+            </div>
+
+            <div id="message" class="message"></div>
+        </main>
+    </div>
     <script>
         const SUPABASE_URL = 'https://pcxhlgnlrlsnlpmgcbai.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_eKRCiIBSRE_6al_hc0rOHA_P5wL6KeQ';
