@@ -18,13 +18,19 @@
         .topbar-left .brand-strip { text-transform:uppercase; letter-spacing:0.22em; font-size:0.95rem; font-weight:700; color:#2563eb; }
         .panel { background: rgba(255,255,255,0.9); border:1px solid rgba(148,163,184,0.12); border-radius:16px; padding:2rem; max-width:880px; margin:0 auto; box-shadow:0 10px 30px rgba(2,6,23,0.06); color: #111827; }
         body.dark .panel { background: rgba(6,10,20,0.6); }
-        body.dark .panel, body.dark .panel h2, body.dark .panel p, body.dark .meta { color: #e2e8f0; }
+        body.dark .panel, body.dark .panel h2, body.dark .panel p, body.dark .panel .meta, body.dark .panel label { color: #e2e8f0; }
         h2 { margin-top:0; margin-bottom:0.5rem; font-weight:700; }
         .meta { color:#475569; margin-bottom:0.75rem; }
+        .settings-menu { display:flex; gap:0.75rem; margin-bottom:1.5rem; }
+        .settings-menu button { flex:1; border:1px solid rgba(56,189,248,0.35); background: rgba(56,189,248,0.08); color:#0c4a6e; padding:12px 14px; border-radius:999px; font-weight:700; cursor:pointer; }
+        .settings-menu button.active { background:#38bdf8; color:#fff; border-color:#38bdf8; }
+        .settings-menu button:hover { background: rgba(56,189,248,0.12); }
         label { display:block; margin-bottom:0.5rem; color:#475569; font-weight:600; }
         input { width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(148,163,184,0.18); }
         button { background:#38bdf8; color:#fff; border:none; padding:12px 14px; border-radius:10px; font-weight:700; cursor:pointer; }
         button.secondary { background:#2d3748; }
+        .button-link { display:inline-flex; align-items:center; justify-content:center; padding:12px 16px; border-radius:999px; background: rgba(56,189,248,0.15); color: #0369a1; text-decoration:none; font-weight:700; border:1px solid rgba(56,189,248,0.3); }
+        .button-link:hover { background: rgba(56,189,248,0.2); }
         .message { margin-top:1rem; display:none; padding:10px; border-radius:8px; }
         .success { background:#ecfdf5; color:#166534; border:1px solid #a7f3d0; display:block; }
         .error { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; display:block; }
@@ -39,7 +45,6 @@
                 <div class="meta">Account-Einstellungen</div>
             </div>
             <div class="topbar-right">
-                <button id="themeToggle" type="button" class="theme-toggle" style="margin-right:0.5rem;">Dark Mode</button>
                 <a href="forum.html" class="button-link">Zum Forum</a>
             </div>
         </div>
@@ -47,6 +52,12 @@
         <main class="panel" role="main">
             <h2>Account-Einstellungen</h2>
             <p>Nur angemeldete Benutzer kommen hierher. Du kannst dein Profil ansehen, aktualisieren oder dich abmelden.</p>
+
+            <div class="settings-menu" role="tablist">
+                <button type="button" class="active" data-target="newEmail">E-Mail</button>
+                <button type="button" data-target="fullName">Name</button>
+                <button type="button" data-target="newPassword">Passwort</button>
+            </div>
 
             <div class="meta">Eingeloggt als: <strong id="userEmail">Lade...</strong></div>
             <div class="meta">Benutzer-ID: <strong id="userId">Lade...</strong></div>
@@ -60,11 +71,14 @@
                     <label for="newEmail">Neue E-Mail (optional)</label>
                     <input type="email" id="newEmail" placeholder="neue@mail.de" autocomplete="email">
                 </div>
+                <div class="form-row">
+                    <label for="newPassword">Neues Passwort</label>
+                    <input type="password" id="newPassword" placeholder="Neue Passwort" autocomplete="new-password">
+                </div>
                 <button type="submit">Profil aktualisieren</button>
             </form>
 
             <div style="margin-top:1rem; display:flex; gap:0.75rem;">
-                <a href="forum.html" class="secondary" style="display:inline-block;padding:10px 14px;border-radius:8px;background:#2d3748;color:#fff;text-decoration:none;">Zum Forum</a>
                 <button id="logoutButton" type="button" style="padding:10px 14px;border-radius:8px;">Abmelden</button>
             </div>
 
@@ -74,20 +88,7 @@
     <script>
         const SUPABASE_URL = 'https://pcxhlgnlrlsnlpmgcbai.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_eKRCiIBSRE_6al_hc0rOHA_P5wL6KeQ';
-        const THEME_KEY = 'themePreference';
         let client = null;
-
-        function setTheme(theme) {
-            document.body.classList.toggle('dark', theme === 'dark');
-            document.getElementById('themeToggle').textContent = theme === 'dark' ? 'White Mode' : 'Dark Mode';
-            localStorage.setItem(THEME_KEY, theme);
-        }
-
-        function initTheme() {
-            const stored = localStorage.getItem(THEME_KEY);
-            const theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            setTheme(theme);
-        }
 
         function showMessage(text, type = 'error') {
             const msg = document.getElementById('message');
@@ -112,10 +113,19 @@
             event.preventDefault();
             const fullName = document.getElementById('fullName').value.trim();
             const newEmail = document.getElementById('newEmail').value.trim();
+            const newPassword = document.getElementById('newPassword').value.trim();
+
+            if (newPassword && newPassword.length < 8) {
+                showMessage('Das neue Passwort muss mindestens 8 Zeichen lang sein.', 'error');
+                return;
+            }
 
             const updateData = { data: { full_name: fullName } };
             if (newEmail) {
                 updateData.email = newEmail;
+            }
+            if (newPassword) {
+                updateData.password = newPassword;
             }
 
             const { data, error } = await client.auth.updateUser(updateData);
@@ -129,6 +139,7 @@
                 document.getElementById('userEmail').textContent = data.user.email;
             }
             document.getElementById('newEmail').value = '';
+            document.getElementById('newPassword').value = '';
         }
 
         async function logout() {
@@ -137,11 +148,6 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            initTheme();
-            document.getElementById('themeToggle').addEventListener('click', () => {
-                setTheme(document.body.classList.contains('dark') ? 'light' : 'dark');
-            });
-
             if (typeof supabase === 'undefined') {
                 document.body.innerHTML = '<div style="padding: 2rem; font-family: sans-serif;">Supabase konnte nicht geladen werden. Bitte Seite neu laden.</div>';
                 return;
@@ -150,6 +156,19 @@
             await loadUser();
             document.getElementById('profileForm').addEventListener('submit', updateProfile);
             document.getElementById('logoutButton').addEventListener('click', logout);
+
+            document.querySelectorAll('.settings-menu button').forEach((button) => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.settings-menu button').forEach((btn) => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const targetId = button.dataset.target;
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        target.focus();
+                    }
+                });
+            });
         });
     </script>
 </body>
